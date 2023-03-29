@@ -1,6 +1,7 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import {
   Avatar,
+  Box,
   Button,
   Center,
   Icon,
@@ -23,7 +24,6 @@ const Singup: React.FC<SingUpScreen> = ({ navigation }) => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [preImage, setPreImage] = useState<any>(null);
-  console.log("data: ", data, "error: ", error);
 
   // image picker
   const pickImage = async () => {
@@ -33,12 +33,13 @@ const Singup: React.FC<SingUpScreen> = ({ navigation }) => {
         allowsEditing: true,
         aspect: [4, 4],
         quality: 1,
+        base64: true,
       });
       const resImage = response?.assets;
       resImage?.filter((item: any) => {
         if (item?.type !== "image") return console.log("Please input image!");
         setPreImage(item?.uri);
-        upload(item?.uri);
+        upload(item?.base64);
       });
     } catch (error) {
       if (error) return console.log("Image not uploaded!");
@@ -47,14 +48,14 @@ const Singup: React.FC<SingUpScreen> = ({ navigation }) => {
   //   form submit
   const fromSubmit = async () => {
     setLoading(true);
-    const data = {
+    const dataBody = {
       name,
       username,
       password,
-      // image,
+      image: data,
     };
     try {
-      const res = await Axios.post("/api/v1/auth/register", { data });
+      const res = await Axios.post("/api/v1/auth/register", { dataBody });
       console.log(res);
       setLoading(false);
     } catch (error) {
@@ -66,11 +67,8 @@ const Singup: React.FC<SingUpScreen> = ({ navigation }) => {
     <View>
       <Center h="full" w="full" px={10}>
         <VStack space={3} w="full" alignItems="center">
-          <Avatar
-            source={{ uri: preImage && preImage }}
-            size="2xl"
-            position="relative"
-          >
+          <Box rounded="full" position="relative">
+            <Avatar source={{ uri: preImage && preImage }} size="2xl" />
             <Pressable
               onPress={pickImage}
               position="absolute"
@@ -86,7 +84,7 @@ const Singup: React.FC<SingUpScreen> = ({ navigation }) => {
                 as={<MaterialIcons name="edit" />}
               />
             </Pressable>
-          </Avatar>
+          </Box>
           <Input
             onChangeText={(name) => setName(name)}
             px={4}

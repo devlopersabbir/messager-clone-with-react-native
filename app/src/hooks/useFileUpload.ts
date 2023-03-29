@@ -7,20 +7,22 @@ const useFileUpload = () => {
   const [error, setError] = useState<any>("");
   const [data, setData] = useState<string>("");
 
-  const upload = async (files: FileList | null) => {
+  const upload = async (files: any | null) => {
     if (!files) return setError("File not found!");
-    console.log(files);
+    const base64Img = `data:image/jpg;base64,${files}`;
+    return console.log(base64Img);
+    let data = {
+      file: base64Img,
+      upload_preset: "upload_preset",
+    };
     try {
       setSuccess(false);
       setLoading(true);
-      // const formDate = new FormData();
-      // formDate.append("file", files[0]);
-      // formDate.append("upload_preset", "upload_preset");
       const res = await ImageAxios.post(
         "https://api.cloudinary.com/v1_1/developer-sabbir/image/upload",
-        { files }
+        { data }
       );
-      console.log(res);
+      return console.log(res);
       //   toast.success("Image uploaded!");
       setData(res.data);
       setSuccess(true);

@@ -14,7 +14,7 @@ export const Axios = axios.create({
 export const ImageAxios = axios.create({
   headers: {
     Accept: "application/json",
-    "Content-Type": "multipart/form/data",
+    "content-type": "application/json",
   },
   withCredentials: true,
 });
