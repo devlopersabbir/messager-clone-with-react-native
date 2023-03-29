@@ -1,10 +1,5 @@
 import { Server as HttpServer } from "http";
-import { Server, Socket } from "socket.io";
-import * as dotenv from "dotenv";
-dotenv.config();
-import { authencate } from "./middlewares/socketMiddleware";
-
-// import prisma from "./utils/prisma";
+import { Socket, Server } from "socket.io";
 
 export class SocketServer {
   public static instance: SocketServer;
@@ -13,74 +8,32 @@ export class SocketServer {
 
   constructor(server: HttpServer) {
     SocketServer.instance = this;
-
-    this.io = new Server(server, {
-      cors: {
-        origin: "https://chat-app-frontend.onrender.com",
-        methods: ["GET", "POST"],
-      },
-    });
-
-    this.io.use(authencate);
+    this.io = new Server(server);
     this.socket = null;
     console.log("Socket started");
-    this.io.on("connect", this.StartListeners);
+    this.io.on("connect", this.StartListaning);
   }
-  StartListeners = (socket: Socket) => {
+  StartListaning = (socket: Socket) => {
     this.socket = socket;
-    console.log(`Socket Connnected id: ${socket.data.user.username}`);
-    socket.join(socket.data.user.id);
+    // console.log(socket.data);
 
+    socket.on("connection", () => {
+      console.log("A user connected");
+    });
+    /**
+     * socket messesing
+     */
     socket.on("send_message", async (payload, cb) => {
       try {
-        const message = await prisma.message.create({
-          data: {
-            text: payload.text,
-            chatId: payload.chat.id,
-            userId: socket.data.user.id,
-          },
-          select: {
-            id: true,
-            text: true,
-            userId: true,
-            createdAt: true,
-          },
-        });
-
-        const chat = await prisma.chat.update({
-          where: { id: payload.chat.id },
-          data: { lastMessage: payload.text },
-          select: {
-            id: true,
-            updatedAt: true,
-            users: {
-              select: { id: true, username: true },
-            },
-          },
-        });
-
-        payload?.chat?.users?.map((user: any) => {
-          socket.broadcast.to(user.id).emit("reverse_message", { message });
-          socket.broadcast.to(user.id).emit("update_chat", { chat });
-        });
-
-        cb({ message });
-      } catch (error: any) {
-        console.log("Create message socket or prisma error");
+      } catch (error) {
+        if (error) console.log("Create new message error or db error");
       }
     });
-
-    socket.on("typing", ({ chat, isTyping }, cb) => {
-      const chatMembers = chat.users.filter(
-        (m: any) => m.id !== socket.data.user.id
-      );
-      chatMembers?.map((user: any) => {
-        socket.broadcast.to(user.id).emit("typing", { typing: isTyping });
-      });
-    });
-
+    /**
+     * if any user disconnect from chat
+     */
     socket.on("disconnect", () => {
-      console.log("Socket disconeted", socket.data.user.username);
+      console.log("Socket disconnected!");
     });
   };
 }

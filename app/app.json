@@ -17,6 +17,12 @@
     },
     "permissions": [
       "CAMERA",
+      "photosPermission",
+      "cameraPermission",
+      "microphonePermission",
+      "NSMicrophoneUsageDescription",
+      "NSPhotoLibraryUsageDescription",
+      "NSCameraUsageDescription",
       "READ_CALENDAR",
       "WRITE_CALENDAR",
       "READ_CONTACTS",

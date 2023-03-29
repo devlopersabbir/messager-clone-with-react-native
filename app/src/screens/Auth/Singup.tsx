@@ -15,7 +15,8 @@ import React, { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { SingUpScreen } from "../../utils/PageTypes";
 import useFileUpload from "../../hooks/useFileUpload";
-import { Axios } from "../../utils/axios/axios";
+import { axiosPublic } from "../../utils/axios/axios";
+import axios from "axios";
 
 const Singup: React.FC<SingUpScreen> = ({ navigation }) => {
   const { data, success, error, upload } = useFileUpload();
@@ -35,12 +36,16 @@ const Singup: React.FC<SingUpScreen> = ({ navigation }) => {
         quality: 1,
         base64: true,
       });
-      const resImage = response?.assets;
-      resImage?.filter((item: any) => {
-        if (item?.type !== "image") return console.log("Please input image!");
-        setPreImage(item?.uri);
-        upload(item?.base64);
-      });
+      if (!response.canceled) {
+        const resImage = response?.assets;
+        resImage?.filter((item: any) => {
+          if (item?.type !== "image") return console.log("Please input image!");
+          const imageType = item?.uri.split(".")[3];
+
+          upload(item?.base64, imageType);
+          setPreImage(item?.uri);
+        });
+      }
     } catch (error) {
       if (error) return console.log("Image not uploaded!");
     }
@@ -48,15 +53,15 @@ const Singup: React.FC<SingUpScreen> = ({ navigation }) => {
   //   form submit
   const fromSubmit = async () => {
     setLoading(true);
-    const dataBody = {
-      name,
-      username,
-      password,
-      image: data,
-    };
+
     try {
-      const res = await Axios.post("/api/v1/auth/register", { dataBody });
+      const res = await axiosPublic.post("/api/v1/auth/register", {
+        username,
+        name,
+        password,
+      });
       console.log(res);
+      navigation.navigate("Home");
       setLoading(false);
     } catch (error) {
       console.log(error);

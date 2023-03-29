@@ -1,11 +1,15 @@
 import { ScrollView, View, VStack } from "native-base";
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "../../components/Chat/Header";
 import Message from "../../components/Chat/Message";
 import TypeBox from "../../components/Chat/TypeBox";
 import { ChatScreen, DetailsScreen } from "../../utils/PageTypes";
+import { socket } from "../../utils/socket/socket";
 
 const Chat = ({ navigation }: ChatScreen) => {
+  useEffect(() => {
+    socket;
+  }, []);
   return (
     <View flex={1} bg="white">
       <Header navigation={navigation} />

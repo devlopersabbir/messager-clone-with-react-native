@@ -3,7 +3,7 @@ import {
   createNativeStackNavigator,
   NativeStackHeaderProps,
 } from "@react-navigation/native-stack";
-import React from "react";
+import React, { useEffect } from "react";
 import { RootStackParamsList } from "../utils/PageTypes";
 import Login from "./Auth/Login";
 import Singup from "./Auth/Singup";

@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const baseURL = "http://localhsot:5000";
+export const baseURL = "http://192.168.0.109:5000";
 
-export const Axios = axios.create({
+export const axiosPublic = axios.create({
   baseURL: baseURL,
   headers: {
     Accept: "application/json",
@@ -11,10 +11,10 @@ export const Axios = axios.create({
   withCredentials: true,
 });
 
-export const ImageAxios = axios.create({
+export const axiosFileUpload = axios.create({
   headers: {
     Accept: "application/json",
-    "content-type": "application/json",
+    "Content-Type": "application/json",
   },
   withCredentials: true,
 });
