@@ -8,6 +8,7 @@ import {
   Input,
   Pressable,
   Spinner,
+  Text,
   View,
   VStack,
 } from "native-base";
@@ -16,9 +17,10 @@ import * as ImagePicker from "expo-image-picker";
 import { SingUpScreen } from "../../utils/PageTypes";
 import useFileUpload from "../../hooks/useFileUpload";
 import { axiosPublic } from "../../utils/axios/axios";
-import axios from "axios";
+import { useToast } from "native-base";
 
 const Singup: React.FC<SingUpScreen> = ({ navigation }) => {
+  const toast = useToast();
   const { data, success, error, upload } = useFileUpload();
   const [loading, setLoading] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
@@ -55,17 +57,20 @@ const Singup: React.FC<SingUpScreen> = ({ navigation }) => {
     setLoading(true);
 
     try {
-      const res = await axiosPublic.post("/api/v1/auth/register", {
+      const { data } = await axiosPublic.post("/auth/register", {
         username,
         name,
         password,
       });
-      console.log(res);
-      navigation.navigate("Home");
+      toast.show({ description: data?.message });
+      navigation.navigate("Login");
       setLoading(false);
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
+    } catch (error: any) {
+      if (error) {
+        const mess = error?.response?.data;
+        toast.show({ description: mess?.message });
+        setLoading(false);
+      }
     }
   };
   return (
@@ -143,6 +148,12 @@ const Singup: React.FC<SingUpScreen> = ({ navigation }) => {
           >
             {loading ? <Spinner /> : "Sing up"}
           </Button>
+          <Text>OR</Text>
+          <Pressable onPress={() => navigation.navigate("Login")}>
+            <Text color="green.400" fontSize="18px">
+              Login
+            </Text>
+          </Pressable>
         </VStack>
       </Center>
     </View>

@@ -3,7 +3,7 @@ dotenv.config();
 import express from "express";
 import { AppDataSource } from "./data-source";
 import cors from "cors";
-import { authRoutes } from "./routes";
+import { authRoutes, messageRoutes } from "./routes";
 import http from "http";
 import morgan from "morgan";
 import { SocketServer } from "./socket";
@@ -25,6 +25,7 @@ app.use(morgan("dev"));
  *
  */
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/message", messageRoutes);
 // app.use("/api/v1/users");
 /**
  *

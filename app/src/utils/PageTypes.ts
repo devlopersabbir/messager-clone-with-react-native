@@ -7,6 +7,7 @@ export type RootStackParamsList = {
   Home?: undefined;
   Chat?: undefined;
   Details?: undefined;
+  Auth?: undefined;
 };
 export type WelcomeScreen = NativeStackScreenProps<
   RootStackParamsList,
@@ -22,4 +23,8 @@ export type ChatScreen = NativeStackScreenProps<RootStackParamsList, "Chat">;
 export type DetailsScreen = NativeStackScreenProps<
   RootStackParamsList,
   "Details"
+>;
+export type AuthLayoutScreen = NativeStackScreenProps<
+  RootStackParamsList,
+  "Auth"
 >;

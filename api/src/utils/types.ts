@@ -1,10 +1,12 @@
 export interface JwtPayloadObj {
-  id: string;
+  uuid: string;
   username: string;
 }
 export interface User {
-  username: string;
+  uuid: string;
   id: string;
+  name?: string;
+  username: string;
   image?: string;
 }
 

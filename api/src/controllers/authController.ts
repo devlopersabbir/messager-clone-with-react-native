@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { User } from "../entity/User";
 import { compare, hash } from "bcrypt";
+import { sign } from "jsonwebtoken";
+import { JwtPayloadObj } from "../utils/types";
 
 class AuthController {
   /**
    * url => /api/v1/auth/register
    * method => POST
-   * @param req
-   * @param res
    * access => both
    */
   public static async register(req: Request, res: Response) {
@@ -32,16 +32,18 @@ class AuthController {
       });
       await createUser.save();
       res.status(201).json({ message: `Hi ${name}` });
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Server error", error });
+    }
   }
   /**
    * url => /api/v1/auth/login
    * method => POST
-   * @param req
-   * @param res
    * access => both
    */
   public static async login(req: Request, res: Response) {
+    console.log(req.body);
     const { username, password } = req.body;
     if (!username || !password)
       return res.status(400).json({ message: "Username & Password required!" });
@@ -54,8 +56,20 @@ class AuthController {
       if (!comparePassword)
         return res.status(404).json({ message: "Password incrorrect!" });
 
-      res.status(200).json({ message: "Login successfull" });
-    } catch (error) {}
+      const payload: JwtPayloadObj = {
+        uuid: isUser.uuid,
+        username: isUser.username,
+      };
+      const accessToken = sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "30d",
+      });
+      if (!accessToken)
+        return res.status(500).json({ message: "Fail to create accessToken" });
+      res.status(200).json({ message: "Login successfull", accessToken });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Server error", error });
+    }
   }
 }
 
